@@ -1,0 +1,43 @@
+{
+  "name": "unisson-cli",
+  "version": "1.0.0",
+  "description": "Command line interface for the Unisson Framework",
+  "main": "src/index.js",
+  "bin": {
+    "unisson": "src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "keywords": [
+    "js",
+    "framework",
+    "native",
+    "lightweight",
+    "hmtl",
+    "css",
+    "jsx",
+    "webcomponents"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AnthonyHurteau/unisson-cli.git"
+  },
+  "author": "Anthony Hurteau",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AnthonyHurteau/unisson-cli/issues"
+  },
+  "homepage": "https://github.com/AnthonyHurteau/unisson-cli#readme",
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.4.1"
+  },
+  "dependencies": {
+    "ejs": "3.1.6",
+    "inquirer": "8.2.0",
+    "shelljs": "^0.8.4"
+  }
+}

@@ -1,0 +1,44 @@
+.appBar {
+  display: flex;
+  align-items: center;
+  height: 64px;
+  font-size: xx-large;
+  font-weight: bolder;
+  vertical-align: middle;
+  color: #fff;
+  background-color: #560027;
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  text-align: center;
+  margin: 5% 15%;
+}
+
+.flex {
+  flex: 1;
+}
+
+.gutter {
+  padding: 1em;
+}
+
+.flexFull {
+  flex: 0 0 100%;
+}
+
+@media (max-width: 800px) {
+  .container {
+    margin: 5% 8%;
+    padding-bottom: 25px;
+  }
+
+  .gutter {
+    padding: 0;
+  }
+
+  .flexSmall {
+    flex: 0 0 100%;
+  }
+}

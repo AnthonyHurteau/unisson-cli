@@ -1,0 +1,20 @@
+{
+  "name": "<%= projectTitle %>",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "vite --host",
+    "build": "vite build",
+    "serve": "vite preview --host"
+  },
+  "dependencies": {
+    "unisson": "^1.0.17"
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.27.1",
+    "prettier": "^2.4.1",
+    "vite": "^2.6.4"
+  }
+}
