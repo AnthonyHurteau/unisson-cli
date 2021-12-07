@@ -4,16 +4,26 @@ const fs = require("fs");
 const path = require("path");
 const inquirer = require("inquirer");
 const chalk = require("chalk");
-const template = require("./template");
-const shelljs = require("shelljs");
+const projectCreation = require("./projectCreation");
+const componentCreation = require("./componentCreation");
 
 const operations = { create: "create", c: "c", help: "help", h: "h" };
 const operationsList = ["create", "help"];
 const types = { app: "app", a: "a", component: "component", c: "c" };
 const typesList = ["app", "component"];
-const args = { operation: process.argv[2], type: process.argv[3], name: process.argv[4] };
 
-const templates = fs.readdirSync(path.join(__dirname, "templates"));
+let args = {};
+if (process.argv[2]) {
+  args.operation = process.argv[2];
+}
+if (process.argv[3]) {
+  args.type = process.argv[3];
+}
+if (process.argv[4]) {
+  args.name = process.argv[4];
+}
+
+const templates = { component: "component-template", project: "vanilla-template" };
 
 const questions = [
   // Can use this when we will have TS template
@@ -57,7 +67,7 @@ const questions = [
 ];
 
 const currentDirectory = process.cwd();
-const operationArg = process.argv[2] ? process.argv[2] : null;
+const operationArg = process.argv[2] ?? null;
 
 if ([operations.create, operations.c, null].includes(operationArg)) {
   program();
@@ -71,127 +81,114 @@ if ([operations.create, operations.c, null].includes(operationArg)) {
 
 function program() {
   inquirer.prompt(questions).then((answers) => {
+    answers = { ...answers, ...args };
+
     // Can use this when we will have TS template
     // const projectTemplate = answers["template"];
-    const projectTemplate = templates[0];
     const operation = answers["operation"];
-    const projectName = answers["name"] ?? "";
+    const type = answers["type"];
+    const name = answers["name"] ?? "";
+    const projectTemplate = type === types.c || type === types.component ? templates.component : templates.project;
     const templatePath = path.join(__dirname, "templates", projectTemplate);
 
-    const targetPath = path.join(currentDirectory, projectName);
-
-    if (operation === operations.help || operations.h) {
+    if ([operations.help, operations.h].includes(operation)) {
       showHelpMessage();
       return false;
+    } else if ([operations.create, operations.c].includes(operation)) {
+      if ([types.app, types.a].includes(type)) {
+        createProject(name, templatePath, currentDirectory);
+      }
+      if ([types.component, types.c].includes(type)) {
+        createComponent(name, templatePath, currentDirectory);
+      }
     }
-
-    // if (!checkProjectName(projectName)) {
-    //   return;
-    // }
-
-    // if (!createProject(targetPath)) {
-    //   return;
-    // }
-
-    // createDirectoryContents(templatePath, projectName, projectName);
-
-    // if (!postProcess(templatePath, targetPath)) {
-    //   return;
-    // }
-
-    showCompleteMessage(projectName);
   });
+}
+
+function createProject(projectName, templatePath, currentDirectory) {
+  const targetPath = path.join(currentDirectory, projectName);
+
+  if (!projectCreation.checkProjectName(projectName)) {
+    return;
+  }
+
+  if (!projectCreation.createProject(targetPath)) {
+    return;
+  }
+
+  projectCreation.createDirectoryContents(templatePath, projectName, projectName, currentDirectory);
+
+  if (!projectCreation.postProcess(templatePath, targetPath)) {
+    return;
+  }
+
+  showProjectCreationCompleteMessage(projectName, targetPath);
+}
+
+function createComponent(componentName, templatePath, currentDirectory) {
+  if (!componentCreation.checkComponentName(componentName)) {
+    return;
+  }
+
+  const componentNames = componentCreation.componentNameModeller(componentName);
+  const targetPath = path.join(currentDirectory, componentNames.name);
+  const folderSuffix = "-component";
+
+  if (!componentCreation.createComponent(targetPath, folderSuffix)) {
+    return;
+  }
+
+  componentCreation.createComponentContents(templatePath, componentNames, currentDirectory, folderSuffix);
+
+  showComponentCreationCompleteMessage(componentName);
 }
 
 function showHelpMessage() {
   console.log("");
   console.log("Please use the following syntax: " + chalk.green("unission <operation> <type> <name>"));
   console.log("");
-  console.log(chalk.green("---- $operation ----"));
+  console.log(chalk.green("---- <operation> ----"));
   console.log(chalk.blueBright(operations.help) + " or " + chalk.blueBright(operations.h));
   console.log(chalk.blueBright(operations.create) + " or " + chalk.blueBright(operations.c));
   console.log("");
-  console.log(chalk.green("---- create $type ----"));
+  console.log(chalk.green("---- create <type> ----"));
   console.log(chalk.blueBright(types.app) + " or " + chalk.blueBright(types.a));
   console.log(chalk.blueBright(types.component) + " or " + chalk.blueBright(types.c));
+  console.log("");
+  console.log("For example, to create a new Unisson project called 'todo-list-app'");
+  console.log("Type " + chalk.green("unisson") + " and follow the CLI instructions");
+  console.log("Or type the following command:");
+  console.log(
+    chalk.green("unisson") +
+      " " +
+      chalk.blueBright("create") +
+      " " +
+      chalk.blueBright("app") +
+      " " +
+      chalk.blueBright("todo-list-app")
+  );
+  console.log("Or:");
+  console.log(
+    chalk.green("unisson") +
+      " " +
+      chalk.blueBright("c") +
+      " " +
+      chalk.blueBright("a") +
+      " " +
+      chalk.blueBright("todo-list-app")
+  );
+  console.log("");
 }
 
-function showCompleteMessage(projectName) {
+function showProjectCreationCompleteMessage(projectName) {
   console.log("");
   console.log(chalk.green("Unisson template created successfully!"));
   console.log(chalk.green(`Access the project directory using cd ${projectName}`));
   console.log(chalk.green("Run: npm start"));
 }
 
-function checkProjectName(projectName) {
-  if (!projectName) {
-    console.log(chalk.red("You must chose a project name."));
-    return false;
-  }
-  return true;
-}
-
-function createProject(projectPath) {
-  if (fs.existsSync(projectPath)) {
-    console.log(chalk.red(`Folder ${projectPath} already exists. Delete it or choose another directory name.`));
-    return false;
-  }
-  fs.mkdirSync(projectPath);
-
-  return true;
-}
-
-// list of file/folder that should not be copied
-const skipFiles = ["node_modules", ".template.json"];
-function createDirectoryContents(templatePath, projectName, projectTitle) {
-  // read all files/folders (1 level) from template folder
-  const filesToCreate = fs.readdirSync(templatePath);
-  // loop each file/folder
-  filesToCreate.forEach((file) => {
-    const origFilePath = path.join(templatePath, file);
-
-    // get stats about the current file
-    const stats = fs.statSync(origFilePath);
-
-    // skip files that should not be copied
-    if (skipFiles.indexOf(file) > -1) return;
-
-    if (stats.isFile()) {
-      if (path.extname(file) === ".png") {
-        let contents = fs.readFileSync(origFilePath);
-        const writePath = path.join(currentDirectory, projectName, file);
-        fs.writeFileSync(writePath, contents);
-      } else {
-        // read file content and transform it using template engine
-        let contents = fs.readFileSync(origFilePath, "utf8");
-
-        contents = template.render(contents, { projectTitle });
-        // Rename
-        if (file === ".npmignore") {
-          file = ".gitignore";
-        }
-        // write file to destination folder
-        const writePath = path.join(currentDirectory, projectName, file);
-        fs.writeFileSync(writePath, contents, "utf8");
-      }
-    } else if (stats.isDirectory()) {
-      // create folder in destination folder
-      fs.mkdirSync(path.join(currentDirectory, projectName, file));
-      // copy files/folder inside current folder recursively
-      createDirectoryContents(path.join(templatePath, file), path.join(projectName, file), projectTitle);
-    }
-  });
-}
-
-function postProcess(templatePath, targetPath) {
-  const isNode = fs.existsSync(path.join(templatePath, "package.json"));
-  if (isNode) {
-    shelljs.cd(targetPath);
-    const result = shelljs.exec("npm install");
-    if (result.code !== 0) {
-      return false;
-    }
-  }
-
-  return true;
+function showComponentCreationCompleteMessage(componentName) {
+  console.log("");
+  console.log(chalk.green("Unisson component created successfully!"));
+  console.log(chalk.green(`Access the component directory: ${componentName}`));
 }
