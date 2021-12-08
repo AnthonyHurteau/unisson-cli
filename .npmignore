@@ -7,3 +7,4 @@
 !/src/templates/vanilla-template/.eslintrc.js
 !/src/templates/vanilla-template/.prettierrc.js
 !/src/templates/vanilla-template/.gitignore
+!/src/templates/vanilla-template/src/views/
