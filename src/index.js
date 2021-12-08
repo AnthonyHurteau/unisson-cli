@@ -26,13 +26,6 @@ if (process.argv[4]) {
 const templates = { component: "component-template", project: "vanilla-template" };
 
 const questions = [
-  // Can use this when we will have TS template
-  // {
-  //   name: "template",
-  //   type: "list",
-  //   message: "Which Unisson template do you wish to generate?",
-  //   choices: templates,
-  // },
   {
     name: "operation",
     type: "list",
@@ -83,13 +76,11 @@ function program() {
   inquirer.prompt(questions).then((answers) => {
     answers = { ...answers, ...args };
 
-    // Can use this when we will have TS template
-    // const projectTemplate = answers["template"];
     const operation = answers["operation"];
     const type = answers["type"];
     const name = answers["name"] ?? "";
-    const projectTemplate = type === types.c || type === types.component ? templates.component : templates.project;
-    const templatePath = path.join(__dirname, "templates", projectTemplate);
+    const template = type === types.c || type === types.component ? templates.component : templates.project;
+    const templatePath = path.join(__dirname, "templates", template);
 
     if ([operations.help, operations.h].includes(operation)) {
       showHelpMessage();
@@ -140,7 +131,7 @@ function createComponent(componentName, templatePath, currentDirectory) {
 
   componentCreation.createComponentContents(templatePath, componentNames, currentDirectory, folderSuffix);
 
-  showComponentCreationCompleteMessage(componentName);
+  showComponentCreationCompleteMessage(targetPath, folderSuffix);
 }
 
 function showHelpMessage() {
@@ -180,15 +171,20 @@ function showHelpMessage() {
   console.log("");
 }
 
-function showProjectCreationCompleteMessage(projectName) {
+function showProjectCreationCompleteMessage(projectName, projectPath) {
   console.log("");
   console.log(chalk.green("Unisson template created successfully!"));
+  console.log(chalk.blueBright("Directory: ") + chalk.green(projectPath));
   console.log(chalk.green(`Access the project directory using cd ${projectName}`));
   console.log(chalk.green("Run: npm start"));
+  console.log("");
 }
 
-function showComponentCreationCompleteMessage(componentName) {
+function showComponentCreationCompleteMessage(targetPath, folderSuffix) {
+  const componentPath = targetPath + folderSuffix;
   console.log("");
   console.log(chalk.green("Unisson component created successfully!"));
-  console.log(chalk.green(`Access the component directory: ${componentName}`));
+  console.log(chalk.blueBright("Directory: ") + chalk.green(componentPath));
+  console.log(chalk.yellow("Don't forget to import your new component in the main.js file"));
+  console.log("");
 }

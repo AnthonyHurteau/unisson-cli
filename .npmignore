@@ -3,3 +3,7 @@
 /node_modules
 .DS_Store
 /.vscode
+/assets
+!/src/templates/vanilla-template/.eslintrc.js
+!/src/templates/vanilla-template/.prettierrc.js
+!/src/templates/vanilla-template/.gitignore
