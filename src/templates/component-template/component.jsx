@@ -1,5 +1,5 @@
 import { UnissonComponent } from "unisson";
-import css from "./<%= name %>.module.css";
+import styles from "./<%= name %>.module.css";
 
 export default class <%= className %> extends UnissonComponent {
   constructor() {
