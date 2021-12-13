@@ -15,13 +15,13 @@ export default class App extends UnissonComponent {
     return (
       <div>
         <div class={styles.appBar}>
-          <img src="/unisson192.png" width="60" alt="AppBar logo" />
+          <img src="/unisson192.png" width="60px" height="60px" alt="AppBar logo" />
           <div>{this.title}</div>
         </div>
         <div class={styles.container}>
           <h1 class={styles.flexFull}>Welcome to {this.title}</h1>
           <div class={styles.flexFull}>
-            <img src="/unisson192.png" alt="Unisson logo" />
+            <img src="/unisson192.png" width="192px" height="192px" alt="Unisson logo" />
           </div>
           <h2 class={styles.flexFull}>The Unisson Framework</h2>
           <div class={[styles.flex, styles.flexSmall, styles.gutter].join(" ")}>
