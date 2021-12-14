@@ -7,7 +7,7 @@
     "serve": "vite preview --host"
   },
   "dependencies": {
-    "unisson": "^1.1.0"
+    "unisson": "^1.1.1"
   },
   "devDependencies": {
     "eslint": "^7.32.0",
